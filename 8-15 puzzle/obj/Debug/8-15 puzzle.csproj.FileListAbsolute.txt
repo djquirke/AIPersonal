@@ -1,0 +1,13 @@
+\\scm-home\m2035690\visual studio 2013\Projects\8-15 puzzle\8-15 puzzle\bin\Debug\8-15 puzzle.exe.config
+\\scm-home\m2035690\visual studio 2013\Projects\8-15 puzzle\8-15 puzzle\bin\Debug\8-15 puzzle.exe
+\\scm-home\m2035690\visual studio 2013\Projects\8-15 puzzle\8-15 puzzle\bin\Debug\8-15 puzzle.pdb
+\\scm-home\m2035690\visual studio 2013\Projects\8-15 puzzle\8-15 puzzle\obj\Debug\8-15 puzzle.csprojResolveAssemblyReference.cache
+\\scm-home\m2035690\visual studio 2013\Projects\8-15 puzzle\8-15 puzzle\obj\Debug\MainWindow.baml
+\\scm-home\m2035690\visual studio 2013\Projects\8-15 puzzle\8-15 puzzle\obj\Debug\MainWindow.g.cs
+\\scm-home\m2035690\visual studio 2013\Projects\8-15 puzzle\8-15 puzzle\obj\Debug\App.g.cs
+\\scm-home\m2035690\visual studio 2013\Projects\8-15 puzzle\8-15 puzzle\obj\Debug\8-15 puzzle_MarkupCompile.cache
+\\scm-home\m2035690\visual studio 2013\Projects\8-15 puzzle\8-15 puzzle\obj\Debug\8-15 puzzle.g.resources
+\\scm-home\m2035690\visual studio 2013\Projects\8-15 puzzle\8-15 puzzle\obj\Debug\_8_15_puzzle.Properties.Resources.resources
+\\scm-home\m2035690\visual studio 2013\Projects\8-15 puzzle\8-15 puzzle\obj\Debug\8-15 puzzle.csproj.GenerateResource.Cache
+\\scm-home\m2035690\visual studio 2013\Projects\8-15 puzzle\8-15 puzzle\obj\Debug\8-15 puzzle.exe
+\\scm-home\m2035690\visual studio 2013\Projects\8-15 puzzle\8-15 puzzle\obj\Debug\8-15 puzzle.pdb
