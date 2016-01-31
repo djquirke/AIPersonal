@@ -20,38 +20,62 @@ namespace _8_15_puzzle
     /// </summary>
     public partial class MainWindow : Window
     {
+        BoardManager board_;
+
         public MainWindow()
         {
             InitializeComponent();
-            TextBlock tb = new TextBlock();
-            tb.Text = "1";
-            GameGrid.Children.Add(tb);
+
+            board_ = new BoardManager();
+            board_.Initialise(GameGrid, 3);
         }
 
         private void set8Puzzle(object sender, RoutedEventArgs e)
         {
-            DeleteGrid();
-            SetupGrid(3);
+            board_.ChangeGridSize(3);
         }
 
         private void set15Puzzle(object sender, RoutedEventArgs e)
         {
-            DeleteGrid();
-            SetupGrid(4);
+            board_.ChangeGridSize(4);
         }
 
-        private void DeleteGrid()
+        private async void btnShuffleClick(object sender, RoutedEventArgs e)
         {
-            GameGrid.ColumnDefinitions.RemoveRange(0, GameGrid.ColumnDefinitions.Count);
-            GameGrid.RowDefinitions.RemoveRange(0, GameGrid.RowDefinitions.Count);
-        }
-
-        private void SetupGrid(int size)
-        {
-            for (int i = 0; i < size; i++)
+            int shuffle_count;
+            if(!Int32.TryParse(tbx_shuffle_count.Text, out shuffle_count))
             {
-                GameGrid.RowDefinitions.Add(new RowDefinition());
-                GameGrid.ColumnDefinitions.Add(new ColumnDefinition());
+                MessageBox.Show("Invalid shuffle count", "Error!", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+                return;
+            }
+
+            EnableAllButtons(false);
+
+            await Task.Run(() => board_.ShuffleBoard(shuffle_count));
+            board_.DrawBoard();
+            EnableAllButtons(true);
+        }
+
+        private void EnableAllButtons(bool p)
+        {
+            btn_15.IsEnabled = p;
+            btn_8.IsEnabled = p;
+            btn_BFS.IsEnabled = p;
+            btn_MD.IsEnabled = p;
+            btn_PD.IsEnabled = p;
+            btn_shuffle.IsEnabled = p;
+        }
+
+        private void btn_BFS_Click(object sender, RoutedEventArgs e)
+        {
+            if(board_.RunBFS())
+            {
+                MessageBox.Show("BFS was a success!", "Success", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+                board_.RunSimulation();
+            }
+            else
+            {
+                MessageBox.Show("BFS failed!", "Fail!", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
             }
         }
     }
