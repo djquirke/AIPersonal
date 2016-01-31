@@ -6,6 +6,35 @@ using System.Threading.Tasks;
 
 namespace _8_15_puzzle
 {
+    class BoardEqualityComparer : IEqualityComparer<List<List<int>>>
+    {
+        public bool Equals(List<List<int>> l1, List<List<int>> l2)
+        {
+            for (int i = 0; i < l1.Count; i++)
+            {
+                if (!l1[i].SequenceEqual(l2[i]))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public int GetHashCode(List<List<int>> list)
+        {
+            int hash = 1234567;
+            foreach(List<int> list2 in list)
+            {
+                foreach(int i in list2)
+                {
+                    hash = hash * 37 + i.GetHashCode();
+                }
+            }
+            return hash;
+        }
+
+    }
 
     class BFSNode
     {
@@ -34,16 +63,31 @@ namespace _8_15_puzzle
 
     struct Move
     {
-        public Position blank;
-        public Position other;
+        public Position pos1;
+        public Position pos2;
+
+        public Move(Position pos1, Position pos2)
+        {
+            this.pos1 = pos1;
+            this.pos2 = pos2;
+        }
+
+        //public Move()
+        //{
+        //    pos1 = new Position();
+        //    pos2 = new Position();
+        //}
+
+
     }
 
     class AI_BFS
     {
         int size_;
         List<List<int>> goal_board;
+        public int searched_board_count;
 
-        public bool Run(List<List<int>> board, Position blank_pos, ref List<Position> moves, int grid_size)
+        public bool Run(List<List<int>> board, Position blank_pos, ref List<List<List<int>>> moves, int grid_size)
         {
             goal_board = new List<List<int>>();
 
@@ -75,12 +119,14 @@ namespace _8_15_puzzle
             root.parent = null;
             BFSNode goal = new BFSNode();
             
+            HashSet<List<List<int>>> searched_boards = new HashSet<List<List<int>>>(new BoardEqualityComparer());
             List<BFSNode> search = new List<BFSNode>();
             search.Add(root);
 
             bool goal_reached = false;
-
-            while(search.Count > 0 && !goal_reached)
+            System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+            sw.Start();
+            while(search.Count > 0 && !goal_reached && sw.ElapsedMilliseconds < 10000)
             {
                 BFSNode node_to_expand = new BFSNode(search[0]);
                 search.RemoveAt(0);
@@ -89,19 +135,45 @@ namespace _8_15_puzzle
 
                 foreach(BFSNode child in children)
                 {
-                    if(CompareBoards(child.board, goal_board))
+                    if (CompareBoards(child.board, goal_board))
                     {
                         goal_reached = true;
                         goal = child;
                     }
-                    else 
+                    else if (CompareBoards(child.board, searched_boards))
+                    {
+                        continue;
+                    }
+                    else
                     {
                         search.Add(child);
+                        searched_boards.Add(child.board);
                     }
                 }
             }
+            sw.Stop();
+            if (!goal_reached)
+                return false;
 
-            return goal_reached;
+            searched_board_count = searched_boards.Count;
+            TraverseTree(ref moves, goal);
+
+            return true;
+        }
+
+        private bool CompareBoards(List<List<int>> list, HashSet<List<List<int>>> searched_boards)
+        {
+            return searched_boards.Contains(list);
+        }
+
+        private void TraverseTree(ref List<List<List<int>>> moves, BFSNode node)
+        {
+            moves.Add(node.board);
+
+            if (node.parent == null) return;
+
+            TraverseTree(ref moves, node.parent);
+
         }
 
         private bool CompareBoards(List<List<int>> board, List<List<int>> goal_board)

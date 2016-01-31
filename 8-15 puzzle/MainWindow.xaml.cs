@@ -33,15 +33,28 @@ namespace _8_15_puzzle
         private void set8Puzzle(object sender, RoutedEventArgs e)
         {
             board_.ChangeGridSize(3);
+            btn_BFS.IsEnabled = true;
+        }
+
+        private void setHardest8(object sender, RoutedEventArgs e)
+        {
+            board_.ChangeGridSize(3);
+            btn_BFS.IsEnabled = true;
+
+            board_.InitialiseHardest8();
         }
 
         private void set15Puzzle(object sender, RoutedEventArgs e)
         {
             board_.ChangeGridSize(4);
+            btn_BFS.IsEnabled = false;
         }
 
         private async void btnShuffleClick(object sender, RoutedEventArgs e)
         {
+            lbl_rt.Content = "";
+            lbl_moves.Content = "";
+
             int shuffle_count;
             if(!Int32.TryParse(tbx_shuffle_count.Text, out shuffle_count))
             {
@@ -53,6 +66,7 @@ namespace _8_15_puzzle
 
             await Task.Run(() => board_.ShuffleBoard(shuffle_count));
             board_.DrawBoard();
+
             EnableAllButtons(true);
         }
 
@@ -64,19 +78,39 @@ namespace _8_15_puzzle
             btn_MD.IsEnabled = p;
             btn_PD.IsEnabled = p;
             btn_shuffle.IsEnabled = p;
+            btn_hard8.IsEnabled = p;
         }
 
-        private void btn_BFS_Click(object sender, RoutedEventArgs e)
+        private async void btn_BFS_Click(object sender, RoutedEventArgs e)
         {
-            if(board_.RunBFS())
+            EnableAllButtons(false);
+
+            long rt = 0;
+            int move_count = 0;
+
+            bool success = await Task.Run(() => board_.RunBFS(ref rt, ref move_count));
+
+            EnableAllButtons(true);
+
+            lbl_rt.Content = rt.ToString() + "ms";
+            lbl_moves.Content = move_count.ToString();
+
+            if(success)
             {
                 MessageBox.Show("BFS was a success!", "Success", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
-                board_.RunSimulation();
+                Simulate();
             }
             else
             {
                 MessageBox.Show("BFS failed!", "Fail!", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
             }
+        }
+
+        private async void Simulate()
+        {
+            EnableAllButtons(false);
+            await Task.Run(() => board_.RunSimulation(250));
+            EnableAllButtons(true);
         }
     }
 }
