@@ -26,28 +26,20 @@ namespace _8_15_puzzle
         {
             InitializeComponent();
 
+            
+
             board_ = new BoardManager();
             board_.Initialise(GameGrid, 3);
-        }
-
-        private void set8Puzzle(object sender, RoutedEventArgs e)
-        {
-            board_.ChangeGridSize(3);
-            btn_BFS.IsEnabled = true;
+            rdio_8.IsChecked = true;
         }
 
         private void setHardest8(object sender, RoutedEventArgs e)
         {
             board_.ChangeGridSize(3);
-            btn_BFS.IsEnabled = true;
+            cbxi_bfs.IsEnabled = true;
+            rdio_8.IsChecked = true;
 
             board_.InitialiseHardest8();
-        }
-
-        private void set15Puzzle(object sender, RoutedEventArgs e)
-        {
-            board_.ChangeGridSize(4);
-            btn_BFS.IsEnabled = false;
         }
 
         private async void btnShuffleClick(object sender, RoutedEventArgs e)
@@ -72,16 +64,16 @@ namespace _8_15_puzzle
 
         private void EnableAllButtons(bool p)
         {
-            btn_15.IsEnabled = p;
-            btn_8.IsEnabled = p;
-            btn_BFS.IsEnabled = p;
-            btn_MD.IsEnabled = p;
-            btn_PD.IsEnabled = p;
+            rdio_8.IsEnabled = p;
+            rdio_15.IsEnabled = p;
+            cbx_alg.IsEnabled = p;
+            cbxi_bfs.IsEnabled = p;
             btn_shuffle.IsEnabled = p;
             btn_hard8.IsEnabled = p;
+            btn_Run.IsEnabled = p;
         }
 
-        private async void btn_BFS_Click(object sender, RoutedEventArgs e)
+        private async void runBFS()
         {
             EnableAllButtons(false);
 
@@ -111,6 +103,56 @@ namespace _8_15_puzzle
             EnableAllButtons(false);
             await Task.Run(() => board_.RunSimulation(250));
             EnableAllButtons(true);
+        }
+
+        private void rdio_8_Checked(object sender, RoutedEventArgs e)
+        {
+            board_.ChangeGridSize(3);
+            cbxi_bfs.IsEnabled = true;
+        }
+
+        private void rdio_15_Checked(object sender, RoutedEventArgs e)
+        {
+            board_.ChangeGridSize(4);
+            cbxi_bfs.IsEnabled = false;
+            if(cbx_alg.Text.Equals("Breadth First Search"))
+            {
+                cbx_alg.Text = "";
+            }
+        }
+
+        private void cbx_alg_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.AddedItems.Count == 0) return;
+
+            ComboBoxItem cbi = ((sender as ComboBox).SelectedItem as ComboBoxItem);
+            if(cbi.Content.Equals("Breadth First Search"))
+            {
+                cbx_heur.IsEnabled = false;
+            }
+            else if(cbi.Content.Equals("A*"))
+            {
+                cbx_heur.IsEnabled = true;
+            }
+        }
+
+        private void btn_Run_Click(object sender, RoutedEventArgs e)
+        {
+            if(cbx_alg.Text.Equals("A*") && cbx_heur.SelectedItem == null) return;
+
+            if(cbx_alg.Text.Equals("Breadth First Search"))
+            {
+                runBFS();
+            }
+            else if(cbx_alg.Text.Equals("A*") && cbx_heur.Text.Equals("Manhattan Distance"))
+            {
+                MessageBox.Show("A* with MD");
+            }
+            else if(cbx_alg.Text.Equals("A*") && cbx_heur.Text.Equals("Pattern Databases"))
+            {
+                MessageBox.Show("A* with PD");
+            }
+
         }
     }
 }

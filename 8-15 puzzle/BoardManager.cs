@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
+using Board = System.Collections.Generic.List<System.Collections.Generic.List<int>>;
 
 namespace _8_15_puzzle
 {
@@ -43,8 +44,9 @@ namespace _8_15_puzzle
 
     class BoardManager
     {
-        List<List<int>> tile_values_;
-        List<List<List<int>>> moves_;
+        Board tile_values_;
+        Board goal_board_;
+        List<Move> moves_;
         Grid game_grid_;
         int size_;
         int[] blank_pos_;
@@ -52,9 +54,10 @@ namespace _8_15_puzzle
 
         public void Initialise(Grid grid, int size)
         {
-            tile_values_ = new List<List<int>>();
+            tile_values_ = new Board();
+            goal_board_ = new Board();
             game_grid_ = grid;
-            moves_ = new List<List<List<int>>>();
+            moves_ = new List<Move>();
 
             ChangeGridSize(size);
         }
@@ -97,11 +100,13 @@ namespace _8_15_puzzle
 
         private void InitialiseValues(int size)
         {
-            tile_values_ = new List<List<int>>();
+            tile_values_ = new Board();
+            goal_board_ = new Board();
             int counter = 0;
             for (int i = 0; i < size; i++)
             {
                 List<int> temp_list = new List<int>();
+                List<int> temp_list2 = new List<int>();
 
                 for (int j = 0; j < size; j++)
                 {
@@ -114,8 +119,10 @@ namespace _8_15_puzzle
                     }
 
                     temp_list.Add(counter);
+                    temp_list2.Add(counter);
                 }
                 tile_values_.Add(temp_list);
+                goal_board_.Add(temp_list2);
             }
         }
 
@@ -124,7 +131,7 @@ namespace _8_15_puzzle
             game_grid_.Children.RemoveRange(0, game_grid_.ColumnDefinitions.Count * game_grid_.RowDefinitions.Count);
             game_grid_.ColumnDefinitions.RemoveRange(0, game_grid_.ColumnDefinitions.Count);
             game_grid_.RowDefinitions.RemoveRange(0, game_grid_.RowDefinitions.Count);
-            tile_values_ = new List<List<int>>();
+            tile_values_ = new Board();
         }
 
         private void SetupGrid(int size)
@@ -244,7 +251,7 @@ namespace _8_15_puzzle
             System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
             moves_.Clear();
             sw.Start();
-            bool success = bfs.Run(tile_values_, new Position(blank_pos_[0], blank_pos_[1]), ref moves_, size_);
+            bool success = bfs.Run(tile_values_, new Position(blank_pos_[0], blank_pos_[1]), goal_board_, ref moves_, size_);
             sw.Stop();
             timer = sw.ElapsedMilliseconds;
             move_count = moves_.Count - 1;
@@ -265,11 +272,23 @@ namespace _8_15_puzzle
             {
                 for(int i = 0; i < moves_.Count; i++)
                 {
-                    tile_values_ = moves_[moves_.Count - (i + 1)];
+                    //tile_values_ = moves_[moves_.Count - (i + 1)];
+                    MakeMove(moves_[moves_.Count - (i + 1)]);
                     DrawBoard();
                     System.Threading.Thread.Sleep(speed);
                 }
             }
+        }
+
+        private void MakeMove(Move move)
+        {
+            if (move == null)
+                return;
+            int val1 = tile_values_[move.pos1.x][move.pos1.y];
+            int val2 = tile_values_[move.pos2.x][move.pos2.y];
+
+            tile_values_[move.pos1.x][move.pos1.y] = val2;
+            tile_values_[move.pos2.x][move.pos2.y] = val1;
         }
 
         internal void InitialiseHardest8()

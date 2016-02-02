@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Board = System.Collections.Generic.List<System.Collections.Generic.List<int>>;
 
 namespace _8_15_puzzle
 {
-    class BoardEqualityComparer : IEqualityComparer<List<List<int>>>
+    class BoardEqualityComparer : IEqualityComparer<Board>
     {
-        public bool Equals(List<List<int>> l1, List<List<int>> l2)
+        public bool Equals(Board l1, Board l2)
         {
             for (int i = 0; i < l1.Count; i++)
             {
@@ -21,7 +22,7 @@ namespace _8_15_puzzle
             return true;
         }
 
-        public int GetHashCode(List<List<int>> list)
+        public int GetHashCode(Board list)
         {
             int hash = 1234567;
             foreach(List<int> list2 in list)
@@ -38,30 +39,37 @@ namespace _8_15_puzzle
 
     class BFSNode
     {
-        public List<List<int>> board;
+        public Board board;
         public Position blank_pos;
         public BFSNode parent;
+        public Move move;
 
-        public BFSNode(List<List<int>> board, Position blank)
+        public BFSNode()
         {
-            this.board = board;
-            blank_pos = blank;
+            board = new Board();
+            blank_pos = new Position();
+            parent = null;
+            move = new Move();
         }
+
         public BFSNode(BFSNode node)
         {
             board = node.board;
             parent = node.parent;
             blank_pos = node.blank_pos;
+            move = node.move;
         }
-        public BFSNode()
+        
+        public BFSNode(Board nextBoard, Position blank_pos, BFSNode parent = null, Move move = null)
         {
-            board = new List<List<int>>();
-            blank_pos = new Position();
-            parent = null;
+            board = nextBoard;
+            this.blank_pos = blank_pos;
+            this.parent = parent;
+            this.move = move;
         }
     }
 
-    struct Move
+    class Move
     {
         public Position pos1;
         public Position pos2;
@@ -72,86 +80,51 @@ namespace _8_15_puzzle
             this.pos2 = pos2;
         }
 
-        //public Move()
-        //{
-        //    pos1 = new Position();
-        //    pos2 = new Position();
-        //}
-
+        public Move()
+        {
+            pos1 = new Position();
+            pos2 = new Position();
+        }
 
     }
 
     class AI_BFS
     {
         int size_;
-        List<List<int>> goal_board;
         public int searched_board_count;
 
-        public bool Run(List<List<int>> board, Position blank_pos, ref List<List<List<int>>> moves, int grid_size)
+        public bool Run(Board board, Position blank_pos, Board goal_board, ref List<Move> moves, int grid_size)
         {
-            goal_board = new List<List<int>>();
-
-            size_ = grid_size;
-            int counter = 0;
-            for (int i = 0; i < size_; i++)
-            {
-                List<int> temp_list = new List<int>();
-
-                for (int j = 0; j < size_; j++)
-                {
-                    int num = ++counter;
-
-                    if (counter == size_ * size_)
-                    {
-                        counter = 0;
-                    }
-
-                    temp_list.Add(counter);
-                }
-                goal_board.Add(temp_list);
-            }
-
-
             if (CompareBoards(board, goal_board))
                 return true; //start board is goal
 
+            size_ = grid_size;
+
             BFSNode root = new BFSNode(board, blank_pos);
-            root.parent = null;
             BFSNode goal = new BFSNode();
             
-            HashSet<List<List<int>>> searched_boards = new HashSet<List<List<int>>>(new BoardEqualityComparer());
-            List<BFSNode> search = new List<BFSNode>();
-            search.Add(root);
+            HashSet<Board> searched_boards = new HashSet<Board>(new BoardEqualityComparer());
+            Queue<BFSNode> search = new Queue<BFSNode>();
+            search.Enqueue(root);
 
             bool goal_reached = false;
             System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
             sw.Start();
+
             while(search.Count > 0 && !goal_reached && sw.ElapsedMilliseconds < 10000)
             {
-                BFSNode node_to_expand = new BFSNode(search[0]);
-                search.RemoveAt(0);
+                BFSNode node_to_expand = new BFSNode(search.Dequeue());
 
                 List<BFSNode> children = GetChildren(node_to_expand);
 
                 foreach(BFSNode child in children)
                 {
-                    if (CompareBoards(child.board, goal_board))
-                    {
-                        goal_reached = true;
-                        goal = child;
-                    }
-                    else if (CompareBoards(child.board, searched_boards))
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        search.Add(child);
-                        searched_boards.Add(child.board);
-                    }
+                    if (CompareBoards(child.board, searched_boards)) continue;
+                    else if (CompareBoards(child.board, goal_board)) { sw.Stop(); goal_reached = true; goal = child; }
+                    else { search.Enqueue(child); searched_boards.Add(child.board); }
                 }
             }
-            sw.Stop();
+
             if (!goal_reached)
                 return false;
 
@@ -161,22 +134,21 @@ namespace _8_15_puzzle
             return true;
         }
 
-        private bool CompareBoards(List<List<int>> list, HashSet<List<List<int>>> searched_boards)
+        private bool CompareBoards(Board list, HashSet<Board> searched_boards)
         {
             return searched_boards.Contains(list);
         }
 
-        private void TraverseTree(ref List<List<List<int>>> moves, BFSNode node)
+        private void TraverseTree(ref List<Move> moves, BFSNode node)
         {
-            moves.Add(node.board);
+            moves.Add(node.move);
 
             if (node.parent == null) return;
 
             TraverseTree(ref moves, node.parent);
-
         }
 
-        private bool CompareBoards(List<List<int>> board, List<List<int>> goal_board)
+        private bool CompareBoards(Board board, Board goal_board)
         { 
             for(int i = 0; i < board.Count; i++)
             {
@@ -199,29 +171,37 @@ namespace _8_15_puzzle
             foreach(Direction dir in Enum.GetValues(typeof(Direction)))
             {
                 Position next_pos = GetCoordsFromDirection(node_to_expand.blank_pos, dir);
+                Move move = new Move(next_pos, node_to_expand.blank_pos);
+
+                if(move.pos1.y == -1)
+                {
+                    AdjustOOB(ref next_pos);
+                }
 
                 if (next_pos.x == node_to_expand.blank_pos.x && next_pos.y == node_to_expand.blank_pos.y) continue;
 
-                List<List<int>> nextBoard = SimulateMove(node_to_expand.board, node_to_expand.blank_pos, next_pos);
+                Board nextBoard = SimulateMove(node_to_expand.board, move);//, node_to_expand.blank_pos, next_pos);
 
-                BFSNode node = new BFSNode(nextBoard, next_pos);
-                node.parent = node_to_expand;
+                BFSNode node = new BFSNode(nextBoard, next_pos, node_to_expand, move);
                 children.Add(node);
             }
 
             return children;
         }
 
-        private List<List<int>> SimulateMove(List<List<int>> board, Position blank, Position other)
+        private Board SimulateMove(Board board, Move move)
         {
-            List<List<int>> temp_board = new List<List<int>>();
-            foreach(List<int> list in board)
+            Board temp_board = new Board();
+            foreach (List<int> list in board)
             {
                 temp_board.Add(new List<int>(list));
             }
-            temp_board[blank.x][blank.y] = board[other.x][other.y];
-            temp_board[other.x][other.y] = 0;
 
+            int val1 = temp_board[move.pos1.x][move.pos1.y];
+            int val2 = temp_board[move.pos2.x][move.pos2.y];
+
+            temp_board[move.pos1.x][move.pos1.y] = val2;
+            temp_board[move.pos2.x][move.pos2.y] = val1;
             return temp_board;
         }
 
