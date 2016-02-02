@@ -11,3 +11,16 @@ C:\Users\Dan\Dropbox\Final Year\AI\AIPersonal\8-15 puzzle\obj\Release\8-15 puzzl
 C:\Users\Dan\Dropbox\Final Year\AI\AIPersonal\8-15 puzzle\obj\Release\8-15 puzzle.exe
 C:\Users\Dan\Dropbox\Final Year\AI\AIPersonal\8-15 puzzle\obj\Release\8-15 puzzle.pdb
 C:\Users\Dan\Dropbox\Final Year\AI\AIPersonal\8-15 puzzle\obj\Release\8-15 puzzle.csprojResolveAssemblyReference.cache
+C:\Users\m2035690\Desktop\ai\8-15 puzzle\bin\Release\8-15 puzzle.exe.config
+C:\Users\m2035690\Desktop\ai\8-15 puzzle\obj\Release\8-15 puzzle.exe
+C:\Users\m2035690\Desktop\ai\8-15 puzzle\obj\Release\8-15 puzzle.pdb
+C:\Users\m2035690\Desktop\ai\8-15 puzzle\bin\Release\8-15 puzzle.exe
+C:\Users\m2035690\Desktop\ai\8-15 puzzle\bin\Release\8-15 puzzle.pdb
+C:\Users\m2035690\Desktop\ai\8-15 puzzle\obj\Release\8-15 puzzle.csprojResolveAssemblyReference.cache
+C:\Users\m2035690\Desktop\ai\8-15 puzzle\obj\Release\MainWindow.baml
+C:\Users\m2035690\Desktop\ai\8-15 puzzle\obj\Release\MainWindow.g.cs
+C:\Users\m2035690\Desktop\ai\8-15 puzzle\obj\Release\App.g.cs
+C:\Users\m2035690\Desktop\ai\8-15 puzzle\obj\Release\8-15 puzzle_MarkupCompile.cache
+C:\Users\m2035690\Desktop\ai\8-15 puzzle\obj\Release\8-15 puzzle.g.resources
+C:\Users\m2035690\Desktop\ai\8-15 puzzle\obj\Release\_8_15_puzzle.Properties.Resources.resources
+C:\Users\m2035690\Desktop\ai\8-15 puzzle\obj\Release\8-15 puzzle.csproj.GenerateResource.Cache
