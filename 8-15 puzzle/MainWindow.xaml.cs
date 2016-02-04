@@ -26,8 +26,6 @@ namespace _8_15_puzzle
         {
             InitializeComponent();
 
-            
-
             board_ = new BoardManager();
             board_.Initialise(GameGrid, 3);
             rdio_8.IsChecked = true;
@@ -44,13 +42,10 @@ namespace _8_15_puzzle
 
         private async void btnShuffleClick(object sender, RoutedEventArgs e)
         {
-            lbl_rt.Content = "";
-            lbl_moves.Content = "";
-
             int shuffle_count;
             if(!Int32.TryParse(tbx_shuffle_count.Text, out shuffle_count))
             {
-                MessageBox.Show("Invalid shuffle count", "Error!", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+                MessageBox.Show("Invalid shuffle count", "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -71,38 +66,8 @@ namespace _8_15_puzzle
             btn_shuffle.IsEnabled = p;
             btn_hard8.IsEnabled = p;
             btn_Run.IsEnabled = p;
-        }
 
-        private async void runBFS()
-        {
-            EnableAllButtons(false);
-
-            long rt = 0;
-            int move_count = 0;
-
-            bool success = await Task.Run(() => board_.RunBFS(ref rt, ref move_count));
-
-            EnableAllButtons(true);
-
-            lbl_rt.Content = rt.ToString() + "ms";
-            lbl_moves.Content = move_count.ToString();
-
-            if(success)
-            {
-                MessageBox.Show("BFS was a success!", "Success", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
-                Simulate();
-            }
-            else
-            {
-                MessageBox.Show("BFS failed!", "Fail!", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
-            }
-        }
-
-        private async void Simulate()
-        {
-            EnableAllButtons(false);
-            await Task.Run(() => board_.RunSimulation(250));
-            EnableAllButtons(true);
+            if (rdio_15.IsEnabled) cbxi_bfs.IsEnabled = false;
         }
 
         private void rdio_8_Checked(object sender, RoutedEventArgs e)
@@ -118,6 +83,7 @@ namespace _8_15_puzzle
             if(cbx_alg.Text.Equals("Breadth First Search"))
             {
                 cbx_alg.Text = "";
+                cbx_heur.IsEnabled = true;
             }
         }
 
@@ -138,7 +104,14 @@ namespace _8_15_puzzle
 
         private void btn_Run_Click(object sender, RoutedEventArgs e)
         {
-            if(cbx_alg.Text.Equals("A*") && cbx_heur.SelectedItem == null) return;
+            if(cbx_alg.Text.Equals("A*") && cbx_heur.SelectedItem == null)
+            {
+                MessageBox.Show("Please select a heuristic!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            else if(cbx_alg.Text.Equals(""))
+            {
+                MessageBox.Show("Please select an algorithm!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
 
             if(cbx_alg.Text.Equals("Breadth First Search"))
             {
@@ -146,13 +119,74 @@ namespace _8_15_puzzle
             }
             else if(cbx_alg.Text.Equals("A*") && cbx_heur.Text.Equals("Manhattan Distance"))
             {
-                MessageBox.Show("A* with MD");
+                runAStar();
             }
             else if(cbx_alg.Text.Equals("A*") && cbx_heur.Text.Equals("Pattern Databases"))
             {
                 MessageBox.Show("A* with PD");
             }
 
+        }
+
+        private async void runBFS()
+        {
+            EnableAllButtons(false);
+
+            long rt = 0;
+            int move_count = 0;
+            int boards_searched = 0;
+
+            bool success = await Task.Run(() => board_.RunBFS(ref rt, ref move_count, ref boards_searched));
+
+            EnableAllButtons(true);
+
+            lbl_rt.Content = rt.ToString() + "ms";
+            lbl_moves.Content = move_count.ToString();
+            lbl_boards_searched.Content = boards_searched.ToString();
+
+            if (success)
+            {
+                MessageBox.Show("BFS was a success!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                Simulate();
+            }
+            else
+            {
+                MessageBox.Show("BFS failed!", "Fail!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private async void runAStar()
+        {
+            EnableAllButtons(false);
+
+            long rt = 0;
+            int move_count = 0;
+            int boards_searched = 0;
+
+            bool success = await Task.Run(() => board_.RunAStar(ref rt, ref move_count, ref boards_searched));
+
+            EnableAllButtons(true);
+
+            lbl_rt.Content = rt.ToString() + "ms";
+            lbl_moves.Content = move_count.ToString();
+            lbl_boards_searched.Content = boards_searched.ToString();
+
+            if (success)
+            {
+                MessageBox.Show("AStar was a success!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                Simulate();
+            }
+            else
+            {
+                MessageBox.Show("AStar failed!", "Fail!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private async void Simulate()
+        {
+            EnableAllButtons(false);
+            await Task.Run(() => board_.RunSimulation(250));
+            EnableAllButtons(true);
         }
     }
 }

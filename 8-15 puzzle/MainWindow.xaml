@@ -1,7 +1,7 @@
 ﻿<Window x:Class="_8_15_puzzle.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" Height="372" Width="676.336" ResizeMode="NoResize">
+        Title="MainWindow" Height="372" Width="735.336" ResizeMode="NoResize">
     <Grid>
         <Grid Background="LightBlue" ShowGridLines="True" HorizontalAlignment="Left" Margin="22,17,0,0" Width="300" Name="GameGrid" Height="300" VerticalAlignment="Top" Grid.RowSpan="2">
             <Grid.ColumnDefinitions>
@@ -20,10 +20,10 @@
 
         <TextBox x:Name="tbx_shuffle_count" HorizontalAlignment="Left" Height="22" Margin="346,246,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="76" Text="100000" />
 
-        <Label Content="Run Time: " HorizontalAlignment="Left" Margin="522,105,0,0" VerticalAlignment="Top"/>
-        <Label x:Name="lbl_rt" Content="" HorizontalAlignment="Left" Margin="588,105,0,0" VerticalAlignment="Top"/>
-        <Label Content="Moves: " HorizontalAlignment="Left" Margin="537,136,0,0" VerticalAlignment="Top"/>
-        <Label x:Name="lbl_moves" Content="" HorizontalAlignment="Left" Margin="588,136,0,0" VerticalAlignment="Top"/>
+        <Label Content="Run Time: " HorizontalAlignment="Left" Margin="569,105,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="lbl_rt" Content="" HorizontalAlignment="Left" Margin="635,105,0,0" VerticalAlignment="Top"/>
+        <Label Content="Moves: " HorizontalAlignment="Left" Margin="584,136,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="lbl_moves" Content="" HorizontalAlignment="Left" Margin="635,136,0,0" VerticalAlignment="Top"/>
         <Label Content="Game Mode:" HorizontalAlignment="Left" Margin="340,19,0,0" VerticalAlignment="Top"/>
 
         <RadioButton x:Name="rdio_8" Content="8 Puzzle" GroupName="Puzzle" HorizontalAlignment="Left" Height="22" Margin="346,42,0,0" VerticalAlignment="Top" Width="67" Checked="rdio_8_Checked"/>
@@ -39,6 +39,8 @@
         </ComboBox>
         <Label Content="Heuristic:" HorizontalAlignment="Left" Margin="340,157,0,0" VerticalAlignment="Top"/>
         <Button x:Name="btn_Run" Content="Run" HorizontalAlignment="Left" Margin="347,295,0,0" VerticalAlignment="Top" Width="155" Click="btn_Run_Click"/>
+        <Label Content="Boards Searched: " HorizontalAlignment="Left" Margin="531,167,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="lbl_boards_searched" Content="" HorizontalAlignment="Left" Margin="635,167,0,0" VerticalAlignment="Top"/>
 
     </Grid>
 </Window>

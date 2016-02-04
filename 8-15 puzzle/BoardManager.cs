@@ -10,47 +10,15 @@ using Board = System.Collections.Generic.List<System.Collections.Generic.List<in
 
 namespace _8_15_puzzle
 {
-
-    class Position
-    {
-        public int x, y;
-
-        public Position(int x, int y)
-        {
-            this.x = x;
-            this.y = y;
-        }
-
-        public Position(Position pos)
-        {
-            this.x = pos.x;
-            this.y = pos.y;
-        }
-
-        public Position()
-        {
-            x = 0;
-            y = 0;
-        }
-    }
-
-    enum Direction
-    {
-        NORTH,
-        EAST,
-        SOUTH,
-        WEST
-    }
-
     class BoardManager
     {
         Board tile_values_;
         Board goal_board_;
         List<Move> moves_;
         Grid game_grid_;
+        HelperFunctions hf_;
         int size_;
-        int[] blank_pos_;
-        
+        Position blank_pos_;
 
         public void Initialise(Grid grid, int size)
         {
@@ -58,6 +26,8 @@ namespace _8_15_puzzle
             goal_board_ = new Board();
             game_grid_ = grid;
             moves_ = new List<Move>();
+            hf_ = new HelperFunctions();
+            blank_pos_ = new Position();
 
             ChangeGridSize(size);
         }
@@ -115,7 +85,7 @@ namespace _8_15_puzzle
                     if (counter == size * size)
                     {
                         counter = 0;
-                        blank_pos_ = new int[] { size - 1, size - 1 };
+                        blank_pos_ = new Position(size - 1, size - 1);
                     }
 
                     temp_list.Add(counter);
@@ -143,9 +113,28 @@ namespace _8_15_puzzle
             }
         }
 
+        internal void InitialiseHardest8()
+        {
+            tile_values_[0][0] = 6;
+            tile_values_[0][1] = 4;
+            tile_values_[0][2] = 7;
+
+            tile_values_[1][0] = 8;
+            tile_values_[1][1] = 5;
+            tile_values_[1][2] = 0;
+
+            tile_values_[2][0] = 3;
+            tile_values_[2][1] = 2;
+            tile_values_[2][2] = 1;
+
+            hf_.SetBlankPos(tile_values_, ref blank_pos_, size_);
+
+            DrawBoard();
+        }
+
         public void ShuffleBoard(int count)
         {
-            SetBlankPos();
+            hf_.SetBlankPos(tile_values_, ref blank_pos_, size_);
 
             for(int i = 0; i < count; i++)
             {
@@ -165,97 +154,62 @@ namespace _8_15_puzzle
             }
         }
 
-        private void SetBlankPos()
-        {
-            for(int i = 0; i < size_; i++)
-            {
-                for(int j = 0; j < size_; j++)
-                {
-                    if(tile_values_[i][j] == 0)
-                    {
-                        blank_pos_ = new int[] { i, j };
-                        return;
-                    }
-                }
-            }
-        }
-
         public List<Position> GetValidMoves()
         {
             List<Position> valid_moves = new List<Position>();
 
             foreach(var dir in Enum.GetValues(typeof(Direction)))
             {
-                int[] nextMove = GetCoordsFromDirection(blank_pos_[0], blank_pos_[1], (Direction)dir);
+                Position nextMove = hf_.GetCoordsFromDirection(blank_pos_, (Direction)dir, size_);//(blank_pos_[0], blank_pos_[1], (Direction)dir);
 
-                if(nextMove[0] == blank_pos_[0] && nextMove[1] == blank_pos_[1]) continue; //At same tile
+                if(nextMove.x == blank_pos_.x && nextMove.y == blank_pos_.y) continue; //At same tile
 
-                Position valid_move = new Position(nextMove[0], nextMove[1]);
+                Position valid_move = new Position(nextMove);
                 valid_moves.Add(valid_move);
             }
             return valid_moves;
         }
 
-        private int[] GetCoordsFromDirection(int cur_x, int cur_y, Direction dir)
-        {
-            int next_x = 0, next_y = 0;
-
-            switch (dir)
-            {
-                case Direction.NORTH:
-                    next_x = cur_x;
-                    next_y = cur_y - 1;
-                    break;
-                case Direction.EAST:
-                    next_x = cur_x + 1;
-                    next_y = cur_y;
-                    break;
-                case Direction.SOUTH:
-                    next_x = cur_x;
-                    next_y = cur_y + 1;
-                    break;
-                case Direction.WEST:
-                    next_x = cur_x - 1;
-                    next_y = cur_y;
-                    break;
-            }
-
-            return AdjustOOB(next_x, next_y);
-        }
-
-        private int[] AdjustOOB(int next_x, int next_y)
-        {
-            if(next_x >= size_) next_x = size_ - 1;
-            if(next_x < 0) next_x = 0;
-            if(next_y < 0) next_y = 0;
-            if(next_y >= size_) next_y = size_ - 1;
-
-            return new int[] { next_x, next_y };
-        }
-
         private void MakeMove(Position move)
         {
-            int[] temp_blank = new int[] { blank_pos_[0], blank_pos_[1] };
+            Position temp_blank = new Position(blank_pos_);
             int move_val = tile_values_[move.x][move.y];
-            blank_pos_[0] = move.x;
-            blank_pos_[1] = move.y;
+            blank_pos_ = move;
 
-            tile_values_[temp_blank[0]][temp_blank[1]] = move_val;
+            tile_values_[temp_blank.x][temp_blank.y] = move_val;
             tile_values_[move.x][move.y] = 0;
         }
 
-        public bool RunBFS(ref long timer, ref int move_count)
+        public bool RunBFS(ref long timer, ref int move_count, ref int boards_searched)
         {
             bool ret = false;
             AI_BFS bfs = new AI_BFS();
             System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
             moves_.Clear();
             sw.Start();
-            bool success = bfs.Run(tile_values_, new Position(blank_pos_[0], blank_pos_[1]), goal_board_, ref moves_, size_);
+            bool success = bfs.Run(tile_values_, blank_pos_, goal_board_, ref moves_, size_, ref boards_searched);
             sw.Stop();
             timer = sw.ElapsedMilliseconds;
             move_count = moves_.Count - 1;
-            if(success)//bfs.Run(tile_values_, new Position(blank_pos_[0], blank_pos_[1]), ref moves_, size_));//(tile_values_, new Position(blank_pos_[0], blank_pos_[1]), ref moves_, size_))
+            if(success)
+            {
+                ret = true;
+            }
+            return ret;
+        }
+
+        public bool RunAStar(ref long timer, ref int move_count, ref int boards_searched)
+        {
+            bool ret = false;
+            AI_AStar astar = new AI_AStar();
+            System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+            moves_.Clear();
+            sw.Start();
+            bool success = astar.Run(tile_values_, blank_pos_, goal_board_, ref moves_, size_, ref boards_searched);
+            sw.Stop();
+            timer = sw.ElapsedMilliseconds;
+            move_count = moves_.Count - 1;
+            if (success)
             {
                 ret = true;
             }
@@ -272,7 +226,6 @@ namespace _8_15_puzzle
             {
                 for(int i = 0; i < moves_.Count; i++)
                 {
-                    //tile_values_ = moves_[moves_.Count - (i + 1)];
                     MakeMove(moves_[moves_.Count - (i + 1)]);
                     DrawBoard();
                     System.Threading.Thread.Sleep(speed);
@@ -289,25 +242,6 @@ namespace _8_15_puzzle
 
             tile_values_[move.pos1.x][move.pos1.y] = val2;
             tile_values_[move.pos2.x][move.pos2.y] = val1;
-        }
-
-        internal void InitialiseHardest8()
-        {
-            tile_values_[0][0] = 6;
-            tile_values_[0][1] = 4;
-            tile_values_[0][2] = 7;
-
-            tile_values_[1][0] = 8;
-            tile_values_[1][1] = 5;
-            tile_values_[1][2] = 0;
-
-            tile_values_[2][0] = 3;
-            tile_values_[2][1] = 2;
-            tile_values_[2][2] = 1;
-
-            SetBlankPos();
-
-            DrawBoard();
         }
     }
 }
