@@ -80,12 +80,12 @@ namespace _8_15_puzzle
 
             boards_searched = searched_boards.Count;
 
-            if (!goal_reached)
-                return false;
+            if (goal_reached)  TraverseTree(ref moves, goal);
 
-            TraverseTree(ref moves, goal);
+            searched_boards.Clear();
+            search.Clear();
 
-            return true;
+            return goal_reached;
         }
 
         private List<BFSNode> GetChildren(BFSNode node_to_expand)

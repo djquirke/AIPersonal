@@ -49,21 +49,23 @@ namespace _8_15_puzzle
             AStarNode root = new AStarNode(board, null, blank_pos, null);
             AStarNode goal = new AStarNode(goal_board, null, null, null);
 
-            List<AStarNode> open_list = new List<AStarNode>();
+            //List<AStarNode> open_list = new List<AStarNode>();
+            PriorityQueue open_q = new PriorityQueue();
+            Dictionary<AStarNode, AStarNode> open_d = new Dictionary<AStarNode, AStarNode>();
             Dictionary<AStarNode, AStarNode> closed_list = new Dictionary<AStarNode, AStarNode>();
-            
-            open_list.Add(root);
 
+            open_q.Add(root);
+            open_d.Add(root, root);
             bool goal_found = false;
 
             System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
             sw.Start();
 
-            while(open_list.Count > 0 && !goal_found) // && sw.ElapsedMilliseconds < 10000)
+            while(open_q.Size() > 0 && !goal_found) // && sw.ElapsedMilliseconds < 10000)
             {
-                boards_searched++;
-
-                AStarNode next_node = GetNextNode(open_list); //inefficient
+                AStarNode next_node = open_q.GetNext();
+                next_node.g = 1000;
+                open_d.Remove(next_node);
 
                 if (hf_.CompareBoards(next_node.board_, goal.board_))
                 {
@@ -73,7 +75,6 @@ namespace _8_15_puzzle
                     continue;
                 }
 
-                open_list.Remove(next_node);
                 closed_list.Add(next_node, next_node);
 
                 List<AStarNode> successors = GetChildren(next_node);
@@ -84,21 +85,24 @@ namespace _8_15_puzzle
 
                     successor.g = next_node.g + 1;
 
-                    if (hf_.CompareBoardsWithG(successor, open_list)) continue; //terribly inefficient
+                    if (hf_.CompareBoards(successor, open_d)) continue;
 
                     successor.h = ManhattanDistance(successor.board_);
                     successor.f = successor.g + successor.h;
-                    open_list.Add(successor);
+                    open_q.Add(successor);
+                    open_d.Add(successor, successor);
                 }
             }
-            
-            if(goal_found)
-            {
-                TraverseTree(ref moves, goal);
-                return true;
-            }
 
-            return false;
+            boards_searched = closed_list.Count;
+
+            if(goal_found) TraverseTree(ref moves, goal);
+
+            closed_list = new Dictionary<AStarNode, AStarNode>();
+            open_d = new Dictionary<AStarNode, AStarNode>();
+            open_q = new PriorityQueue();
+
+            return goal_found;
         }
 
         private float ManhattanDistance(Board other)
