@@ -48,6 +48,7 @@ namespace _8_15_puzzle
     {
         int size_;
         HelperFunctions hf_;
+        Array directions = Enum.GetValues(typeof(Direction));
 
         public bool Run(Board board, Position blank_pos, Board goal_board, ref List<Move> moves, int grid_size, ref int boards_searched)
         {
@@ -140,7 +141,7 @@ namespace _8_15_puzzle
         {
             List<AStarNode> children = new List<AStarNode>();
 
-            foreach (Direction dir in Enum.GetValues(typeof(Direction)))
+            foreach (Direction dir in directions)
             {
                 Position next_pos = hf_.GetCoordsFromDirection(node_to_expand.blank_pos_, dir, size_);
                 Move move = new Move(next_pos, node_to_expand.blank_pos_);
