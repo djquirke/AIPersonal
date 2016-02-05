@@ -30,6 +30,18 @@ namespace _8_15_puzzle
             blank_pos_ = blank;
             move_ = move;
         }
+
+        public override bool Equals(object obj)
+        {
+            AStarNode node = obj as AStarNode;
+            return board_.Equals(node.board_);
+        }
+
+        public override int GetHashCode()
+        {
+            int hash = 23;
+            return hash + 31 * board_.GetHashCode();//base.GetHashCode();
+        }
     }
 
     class AI_AStar
@@ -49,7 +61,6 @@ namespace _8_15_puzzle
             AStarNode root = new AStarNode(board, null, blank_pos, null);
             AStarNode goal = new AStarNode(goal_board, null, null, null);
 
-            //List<AStarNode> open_list = new List<AStarNode>();
             PriorityQueue open_q = new PriorityQueue();
             Dictionary<AStarNode, AStarNode> open_d = new Dictionary<AStarNode, AStarNode>();
             Dictionary<AStarNode, AStarNode> closed_list = new Dictionary<AStarNode, AStarNode>();
@@ -64,43 +75,38 @@ namespace _8_15_puzzle
             while(open_q.Size() > 0 && !goal_found) // && sw.ElapsedMilliseconds < 10000)
             {
                 AStarNode next_node = open_q.GetNext();
-                next_node.g = 1000;
                 open_d.Remove(next_node);
-
-                if (hf_.CompareBoards(next_node.board_, goal.board_))
-                {
-                    sw.Stop();
-                    goal_found = true;
-                    goal = next_node;
-                    continue;
-                }
-
-                closed_list.Add(next_node, next_node);
+                if (next_node.board_.Equals(goal.board_)) { sw.Stop(); goal_found = true; goal = next_node; continue; }
 
                 List<AStarNode> successors = GetChildren(next_node);
 
                 foreach(AStarNode successor in successors)
                 {
-                    if (hf_.CompareBoards(successor, closed_list)) continue;
+                    if (hf_.CompareBoards(successor, closed_list))
+                        continue;
 
                     successor.g = next_node.g + 1;
 
-                    if (hf_.CompareBoards(successor, open_d)) continue;
+                    if (hf_.CompareBoards(successor, open_d)) 
+                        continue;
 
                     successor.h = ManhattanDistance(successor.board_);
                     successor.f = successor.g + successor.h;
                     open_q.Add(successor);
                     open_d.Add(successor, successor);
                 }
+
+                closed_list.Add(next_node, next_node);
             }
 
             boards_searched = closed_list.Count;
 
             if(goal_found) TraverseTree(ref moves, goal);
 
-            closed_list = new Dictionary<AStarNode, AStarNode>();
-            open_d = new Dictionary<AStarNode, AStarNode>();
-            open_q = new PriorityQueue();
+            closed_list.Clear();
+            open_d.Clear();
+            open_q.Clear();
+            GC.Collect();
 
             return goal_found;
         }
@@ -113,7 +119,7 @@ namespace _8_15_puzzle
             {
                 for(int j = 0; j < size_; j++)
                 {
-                    int value = other[i][j];
+                    int value = other.board[i][j];
                     if(value != 0) //don't run MD for 0
                     {
                         int target_x = (value - 1) / size_;
@@ -128,23 +134,6 @@ namespace _8_15_puzzle
             }
 
             return manhattanDistanceSum;
-        }
-
-        private AStarNode GetNextNode(List<AStarNode> list)
-        {
-            float lowest = float.PositiveInfinity;
-            AStarNode next = new AStarNode();
-
-            foreach(AStarNode node in list)
-            {
-                if(node.f < lowest)
-                {
-                    lowest = node.f;
-                    next = node;
-                }
-            }
-
-            return next;
         }
 
         private List<AStarNode> GetChildren(AStarNode node_to_expand)

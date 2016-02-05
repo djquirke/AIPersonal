@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Board = System.Collections.Generic.List<System.Collections.Generic.List<int>>;
 
 namespace _8_15_puzzle
 {
@@ -73,7 +72,7 @@ namespace _8_15_puzzle
                 foreach(BFSNode child in children)
                 {
                     if (hf_.CompareBoards(child.board, searched_boards)) continue;
-                    else if (hf_.CompareBoards(child.board, goal_board)) { sw.Stop(); goal_reached = true; goal = child; }
+                    else if (child.board.Equals(goal_board)) { sw.Stop(); goal_reached = true; goal = child; }
                     else { search.Enqueue(child); searched_boards.Add(child.board); }
                 }
             }
@@ -84,6 +83,7 @@ namespace _8_15_puzzle
 
             searched_boards.Clear();
             search.Clear();
+            GC.Collect();
 
             return goal_reached;
         }

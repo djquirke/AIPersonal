@@ -67,7 +67,7 @@ namespace _8_15_puzzle
             btn_hard8.IsEnabled = p;
             btn_Run.IsEnabled = p;
 
-            if (rdio_15.IsEnabled) cbxi_bfs.IsEnabled = false;
+            if (rdio_15.IsChecked.Value) cbxi_bfs.IsEnabled = false;
         }
 
         private void rdio_8_Checked(object sender, RoutedEventArgs e)

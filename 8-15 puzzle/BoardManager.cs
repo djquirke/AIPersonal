@@ -53,7 +53,7 @@ namespace _8_15_puzzle
                     for (int j = 0; j < game_grid_.RowDefinitions.Count; j++)
                     {
                         tb = new TextBlock();
-                        tb.Text = tile_values_[j][i].ToString();
+                        tb.Text = tile_values_.board[j][i].ToString();
                         tb.VerticalAlignment = System.Windows.VerticalAlignment.Center;
                         tb.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
 
@@ -91,8 +91,8 @@ namespace _8_15_puzzle
                     temp_list.Add(counter);
                     temp_list2.Add(counter);
                 }
-                tile_values_.Add(temp_list);
-                goal_board_.Add(temp_list2);
+                tile_values_.board.Add(temp_list);
+                goal_board_.board.Add(temp_list2);
             }
         }
 
@@ -115,17 +115,17 @@ namespace _8_15_puzzle
 
         internal void InitialiseHardest8()
         {
-            tile_values_[0][0] = 6;
-            tile_values_[0][1] = 4;
-            tile_values_[0][2] = 7;
+            tile_values_.board[0][0] = 6;
+            tile_values_.board[0][1] = 4;
+            tile_values_.board[0][2] = 7;
 
-            tile_values_[1][0] = 8;
-            tile_values_[1][1] = 5;
-            tile_values_[1][2] = 0;
+            tile_values_.board[1][0] = 8;
+            tile_values_.board[1][1] = 5;
+            tile_values_.board[1][2] = 0;
 
-            tile_values_[2][0] = 3;
-            tile_values_[2][1] = 2;
-            tile_values_[2][2] = 1;
+            tile_values_.board[2][0] = 3;
+            tile_values_.board[2][1] = 2;
+            tile_values_.board[2][2] = 1;
 
             hf_.SetBlankPos(tile_values_, ref blank_pos_, size_);
 
@@ -173,11 +173,11 @@ namespace _8_15_puzzle
         private void MakeMove(Position move)
         {
             Position temp_blank = new Position(blank_pos_);
-            int move_val = tile_values_[move.x][move.y];
+            int move_val = tile_values_.board[move.x][move.y];
             blank_pos_ = move;
 
-            tile_values_[temp_blank.x][temp_blank.y] = move_val;
-            tile_values_[move.x][move.y] = 0;
+            tile_values_.board[temp_blank.x][temp_blank.y] = move_val;
+            tile_values_.board[move.x][move.y] = 0;
         }
 
         public bool RunBFS(ref long timer, ref int move_count, ref int boards_searched)
@@ -237,11 +237,11 @@ namespace _8_15_puzzle
         {
             if (move == null)
                 return;
-            int val1 = tile_values_[move.pos1.x][move.pos1.y];
-            int val2 = tile_values_[move.pos2.x][move.pos2.y];
+            int val1 = tile_values_.board[move.pos1.x][move.pos1.y];
+            int val2 = tile_values_.board[move.pos2.x][move.pos2.y];
 
-            tile_values_[move.pos1.x][move.pos1.y] = val2;
-            tile_values_[move.pos2.x][move.pos2.y] = val1;
+            tile_values_.board[move.pos1.x][move.pos1.y] = val2;
+            tile_values_.board[move.pos2.x][move.pos2.y] = val1;
         }
     }
 }

@@ -61,9 +61,9 @@ namespace _8_15_puzzle
     {
         public bool Equals(Board l1, Board l2)
         {
-            for (int i = 0; i < l1.Count; i++)
+            for (int i = 0; i < l1.board.Count; i++)
             {
-                if (!l1[i].SequenceEqual(l2[i]))
+                if (!l1.board[i].SequenceEqual(l2.board[i]))
                 {
                     return false;
                 }
@@ -75,7 +75,7 @@ namespace _8_15_puzzle
         public int GetHashCode(Board list)
         {
             int hash = 19;
-            foreach (List<int> list2 in list)
+            foreach (List<int> list2 in list.board)
             {
                 foreach (int i in list2)
                 {
@@ -95,7 +95,7 @@ namespace _8_15_puzzle
             {
                 for (int j = 0; j < grid_size; j++)
                 {
-                    if (board[i][j] == 0)
+                    if (board.board[i][j] == 0)
                     {
                         blank_pos.x = i;
                         blank_pos.y = j;
@@ -149,11 +149,11 @@ namespace _8_15_puzzle
 
         public bool CompareBoards(Board board, Board goal_board)
         {
-            for (int i = 0; i < board.Count; i++)
+            for (int i = 0; i < board.board.Count; i++)
             {
-                for (int j = 0; j < board.Count; j++)
+                for (int j = 0; j < board.board.Count; j++)
                 {
-                    if (board[i][j] != goal_board[i][j])
+                    if (board.board[i][j] != goal_board.board[i][j])
                     {
                         return false;
                     }
@@ -166,16 +166,16 @@ namespace _8_15_puzzle
         public Board SimulateMove(Board board, Move move)
         {
             Board temp_board = new Board();
-            foreach (List<int> list in board)
+            foreach (List<int> list in board.board)
             {
-                temp_board.Add(new List<int>(list));
+                temp_board.board.Add(new List<int>(list));
             }
 
-            int val1 = temp_board[move.pos1.x][move.pos1.y];
+            int val1 = temp_board.board[move.pos1.x][move.pos1.y];
             //int val2 = temp_board[move.pos2.x][move.pos2.y];
 
-            temp_board[move.pos1.x][move.pos1.y] = temp_board[move.pos2.x][move.pos2.y]; ;
-            temp_board[move.pos2.x][move.pos2.y] = val1;
+            temp_board.board[move.pos1.x][move.pos1.y] = temp_board.board[move.pos2.x][move.pos2.y]; ;
+            temp_board.board[move.pos2.x][move.pos2.y] = val1;
             return temp_board;
         }
 
@@ -196,13 +196,7 @@ namespace _8_15_puzzle
 
         internal bool CompareBoards(AStarNode node, Dictionary<AStarNode, AStarNode> closed_list)
         {
-            if (closed_list.ContainsKey(node))
-            {
-                if (closed_list[node].g < node.g)
-                    return true;
-                return false;
-            }
-            return false;
+            return closed_list.ContainsKey(node);
         }
     } 
 }
