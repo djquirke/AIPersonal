@@ -37,3 +37,6 @@ C:\Users\m2035690\Desktop\ai\8-15 puzzle\obj\Debug\8-15 puzzle_MarkupCompile.cac
 C:\Users\m2035690\Desktop\ai\8-15 puzzle\obj\Debug\8-15 puzzle.g.resources
 C:\Users\m2035690\Desktop\ai\8-15 puzzle\obj\Debug\_8_15_puzzle.Properties.Resources.resources
 C:\Users\m2035690\Desktop\ai\8-15 puzzle\obj\Debug\8-15 puzzle.csproj.GenerateResource.Cache
+C:\Users\Dan\Dropbox\Final Year\AI\AIPersonal\N-Puzzle\8-15 puzzle\bin\Debug\8-15 puzzle.exe.config
+C:\Users\Dan\Dropbox\Final Year\AI\AIPersonal\N-Puzzle\8-15 puzzle\obj\Debug\8-15 puzzle.exe
+C:\Users\Dan\Dropbox\Final Year\AI\AIPersonal\N-Puzzle\8-15 puzzle\obj\Debug\8-15 puzzle.pdb

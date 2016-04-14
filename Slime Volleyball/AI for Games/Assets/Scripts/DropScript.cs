@@ -18,7 +18,7 @@ public class DropScript : MonoBehaviour {
 
 	void OnCollisionEnter(Collision collision) {
 		if (collision.gameObject.Equals(ball)){
-			if (ball.transform.position.x > 0) 
+			if (ball.transform.position.x > 0)
 				ball.transform.position = new Vector3(-5f,4f,0f);
 			else 
 				ball.transform.position = ballT;
@@ -27,6 +27,10 @@ public class DropScript : MonoBehaviour {
 			slime1.rigidbody.velocity = Vector3.zero;
 			slime2.transform.position = slime2T;
 			slime2.rigidbody.velocity = Vector3.zero;
+		}
+		if (collision.gameObject.Equals(slime2))
+		{
+			slime2.GetComponent<SlimeController>().stoppedJumping();
 		}
 	}
 

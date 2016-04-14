@@ -2,6 +2,7 @@
 using System.Collections;
 
 public class SlimeController : MonoBehaviour {
+	bool jumping = false;
 
 	// Use this for initialization
 	void Start () {
@@ -16,8 +17,14 @@ public class SlimeController : MonoBehaviour {
 		if (Input.GetKey(KeyCode.D)){
 			transform.Translate(0.05f*Vector3.right);
 		}
-		if (Input.GetKeyDown(KeyCode.W)){
+		if (Input.GetKeyDown(KeyCode.W) && !jumping){
+			jumping = true;
 			rigidbody.AddForce(250f*Vector3.up,ForceMode.Acceleration);
 		}
+	}
+
+	public void stoppedJumping()
+	{
+		jumping = false;
 	}
 }
