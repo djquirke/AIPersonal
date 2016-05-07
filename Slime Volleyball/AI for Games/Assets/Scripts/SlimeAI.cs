@@ -16,8 +16,8 @@ public class SlimeAI : MonoBehaviour {
 			goLeft();
 		if (ball.transform.position.x > transform.position.x)
 			goRight();
-		if (Random.Range(1,10)==1)
-			jump ();
+		//if (Random.Range(1,10)==1)
+		//	jump ();
 	}
 
 	//DO NOT MODIFY LEFT RIGHT AND JUMP FUNCTIONS!
@@ -29,7 +29,7 @@ public class SlimeAI : MonoBehaviour {
 		if (transform.position.x < 8.5f)
 			transform.Translate(0.075f*Vector3.right);
 	}
-	void jump(){
+	public void jump(){
 		if (transform.position.y < 0.25f)
 			rigidbody.AddForce(125f*Vector3.up,ForceMode.Acceleration);
 	}
