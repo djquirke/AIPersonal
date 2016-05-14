@@ -44,7 +44,7 @@ namespace _8_15_puzzle
         HelperFunctions hf_;
         Array directions_ = Enum.GetValues(typeof(Direction));
 
-        public bool Run(Board board, Position blank_pos, Board goal_board, ref List<Move> moves, int grid_size, ref int boards_searched)
+        public bool Run(Board board, Position blank_pos, Board goal_board, ref List<Move> moves, int grid_size, ref int boards_searched, ref int open_list_size, ref long timer, ref long mem_used)
         {
             hf_ = new HelperFunctions();
 
@@ -64,7 +64,7 @@ namespace _8_15_puzzle
             System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
             sw.Start();
 
-            while(search.Count > 0 && !goal_reached && sw.ElapsedMilliseconds < 10000)
+            while(search.Count > 0 && !goal_reached)// && sw.ElapsedMilliseconds < 10000)
             {
                 BFSNode node_to_expand = new BFSNode(search.Dequeue());
 
@@ -73,11 +73,13 @@ namespace _8_15_puzzle
                 foreach(BFSNode child in children)
                 {
                     if (hf_.CompareBoards(child.board, searched_boards)) continue;
-                    else if (child.board.Equals(goal_board)) { sw.Stop(); goal_reached = true; goal = child; }
+                    else if (child.board.Equals(goal_board)) { timer = sw.ElapsedMilliseconds; sw.Stop(); goal_reached = true; goal = child; }
                     else { search.Enqueue(child); searched_boards.Add(child.board); }
                 }
             }
 
+            mem_used = GC.GetTotalMemory(false);
+            open_list_size = search.Count;
             boards_searched = searched_boards.Count;
 
             if (goal_reached)  TraverseTree(ref moves, goal);

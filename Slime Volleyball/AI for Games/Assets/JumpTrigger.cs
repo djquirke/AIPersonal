@@ -3,6 +3,7 @@ using System.Collections;
 
 public class JumpTrigger : MonoBehaviour {
 
+	//public bool isFront = false;
 	private float time = 0;
 
 	// Use this for initialization
@@ -20,7 +21,7 @@ public class JumpTrigger : MonoBehaviour {
 		if(other.CompareTag("Ball"))
 		{
 			time = 0;
-			this.transform.root.GetComponent<SlimeAI>().jump ();
+			Jump ();
 		}
 	}
 
@@ -32,8 +33,14 @@ public class JumpTrigger : MonoBehaviour {
 			if(time > 0.5f)
 			{
 				time = 0;
-				this.transform.root.GetComponent<SlimeAI>().jump ();
+				Jump();
 			}
 		}
+	}
+
+	void Jump()
+	{
+		this.transform.root.GetComponent<SlimeAI>().jump ();
+		//else this.transform.root.GetComponent<SlimeAI>().jump (new Vector3(1, 1));
 	}
 }

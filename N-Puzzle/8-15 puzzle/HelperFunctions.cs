@@ -194,9 +194,9 @@ namespace _8_15_puzzle
             return false;
         }
 
-        internal bool CompareBoards(AStarNode node, Dictionary<AStarNode, AStarNode> closed_list)
+        internal bool CompareBoards(AStarNode node, HashSet<AStarNode> closed_list)
         {
-            return closed_list.ContainsKey(node);
+            return closed_list.Contains(node);
         }
     } 
 }

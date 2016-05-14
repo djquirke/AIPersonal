@@ -46,6 +46,7 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\GUIController.cs" />
      <Compile Include="Assets\JumpTrigger.cs" />
      <Compile Include="Assets\PrimitivePlus\Scripts\PrimitivePlusEditor.cs" />
      <Compile Include="Assets\Scripts\DropScript.cs" />

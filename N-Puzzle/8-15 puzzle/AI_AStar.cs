@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace _8_15_puzzle
 {
@@ -49,7 +50,7 @@ namespace _8_15_puzzle
         HelperFunctions hf_;
         Array directions = Enum.GetValues(typeof(Direction));
 
-        public bool Run(Board board, Position blank_pos, Board goal_board, ref List<Move> moves, int grid_size, ref int boards_searched)
+        public bool Run(Board board, Position blank_pos, Board goal_board, ref List<Move> moves, int grid_size, ref int boards_searched, ref int open_list_size, ref long timer, ref long memory_used)
         {
             hf_ = new HelperFunctions();
 
@@ -62,21 +63,29 @@ namespace _8_15_puzzle
             AStarNode goal = new AStarNode(goal_board, null, null, null);
 
             PriorityQueue open_q = new PriorityQueue();
-            Dictionary<AStarNode, AStarNode> open_d = new Dictionary<AStarNode, AStarNode>();
-            Dictionary<AStarNode, AStarNode> closed_list = new Dictionary<AStarNode, AStarNode>();
-
+            HashSet<AStarNode> open_d = new HashSet<AStarNode>();
+            HashSet<AStarNode> closed_list = new HashSet<AStarNode>();
+            
             open_q.Add(root);
-            open_d.Add(root, root);
+            open_d.Add(root);
             bool goal_found = false;
 
             System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
             sw.Start();
 
+            
             while(open_q.Size() > 0 && !goal_found) // && sw.ElapsedMilliseconds < 10000)
             {
                 AStarNode next_node = open_q.GetNext();
                 open_d.Remove(next_node);
-                if (next_node.board_.Equals(goal.board_)) { sw.Stop(); goal_found = true; goal = next_node; continue; }
+                if (next_node.board_.Equals(goal.board_))
+                {
+                    timer = sw.ElapsedMilliseconds;
+                    sw.Stop();
+                    goal_found = true;
+                    goal = next_node;
+                    continue;
+                }
 
                 List<AStarNode> successors = GetChildren(next_node);
 
@@ -93,12 +102,14 @@ namespace _8_15_puzzle
                     successor.h = ManhattanDistance(successor.board_);
                     successor.f = successor.g + successor.h;
                     open_q.Add(successor);
-                    open_d.Add(successor, successor);
+                    open_d.Add(successor);
                 }
 
-                closed_list.Add(next_node, next_node);
+                closed_list.Add(next_node);
             }
 
+            memory_used = GC.GetTotalMemory(false);
+            open_list_size = open_q.Size();
             boards_searched = closed_list.Count;
 
             if(goal_found) TraverseTree(ref moves, goal);

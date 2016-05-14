@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class DropScript : MonoBehaviour {
@@ -19,9 +19,15 @@ public class DropScript : MonoBehaviour {
 	void OnCollisionEnter(Collision collision) {
 		if (collision.gameObject.Equals(ball)){
 			if (ball.transform.position.x > 0)
+			{
 				ball.transform.position = new Vector3(-5f,4f,0f);
+				GameObject.Find ("GUI").GetComponent<GUIController>().incrementPlayerScore();
+			}
 			else 
+			{
 				ball.transform.position = ballT;
+				GameObject.Find ("GUI").GetComponent<GUIController>().incrementAIScore();
+			}
 			ball.rigidbody.velocity = Vector3.zero;
 			slime1.transform.position = slime1T;
 			slime1.rigidbody.velocity = Vector3.zero;

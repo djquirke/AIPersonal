@@ -180,16 +180,16 @@ namespace _8_15_puzzle
             tile_values_.board[move.x][move.y] = 0;
         }
 
-        public bool RunBFS(ref long timer, ref int move_count, ref int boards_searched)
+        public bool RunBFS(ref long timer, ref int move_count, ref int boards_searched, ref int open_list_size, ref long mem_used)
         {
             bool ret = false;
             AI_BFS bfs = new AI_BFS();
-            System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+            //System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
             moves_.Clear();
-            sw.Start();
-            bool success = bfs.Run(tile_values_, blank_pos_, goal_board_, ref moves_, size_, ref boards_searched);
-            sw.Stop();
-            timer = sw.ElapsedMilliseconds;
+            //sw.Start();
+            bool success = bfs.Run(tile_values_, blank_pos_, goal_board_, ref moves_, size_, ref boards_searched, ref open_list_size, ref timer, ref mem_used);
+            //sw.Stop();
+            //timer = sw.ElapsedMilliseconds;
             move_count = moves_.Count - 1;
             if(success)
             {
@@ -198,16 +198,16 @@ namespace _8_15_puzzle
             return ret;
         }
 
-        public bool RunAStar(ref long timer, ref int move_count, ref int boards_searched)
+        public bool RunAStar(ref long timer, ref int move_count, ref int boards_searched, ref int open_list_size, ref long mem_used)
         {
             bool ret = false;
             AI_AStar astar = new AI_AStar();
-            System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+            //System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
             moves_.Clear();
-            sw.Start();
-            bool success = astar.Run(tile_values_, blank_pos_, goal_board_, ref moves_, size_, ref boards_searched);
-            sw.Stop();
-            timer = sw.ElapsedMilliseconds;
+            //sw.Start();
+            bool success = astar.Run(tile_values_, blank_pos_, goal_board_, ref moves_, size_, ref boards_searched, ref open_list_size, ref timer, ref mem_used);
+            //sw.Stop();
+            //timer = sw.ElapsedMilliseconds;
             move_count = moves_.Count - 1;
             if (success)
             {
@@ -242,6 +242,125 @@ namespace _8_15_puzzle
 
             tile_values_.board[move.pos1.x][move.pos1.y] = val2;
             tile_values_.board[move.pos2.x][move.pos2.y] = val1;
+        }
+
+        internal void Initialise22Moves()
+        {
+            tile_values_.board[0][0] = 7;
+            tile_values_.board[0][1] = 6;
+            tile_values_.board[0][2] = 0;
+
+            tile_values_.board[1][0] = 5;
+            tile_values_.board[1][1] = 4;
+            tile_values_.board[1][2] = 3;
+
+            tile_values_.board[2][0] = 2;
+            tile_values_.board[2][1] = 8;
+            tile_values_.board[2][2] = 1;
+
+            hf_.SetBlankPos(tile_values_, ref blank_pos_, size_);
+
+            DrawBoard();
+        }
+
+        internal void Initialise10Moves()
+        {
+            tile_values_.board[0][0] = 1;
+            tile_values_.board[0][1] = 5;
+            tile_values_.board[0][2] = 2;
+
+            tile_values_.board[1][0] = 8;
+            tile_values_.board[1][1] = 3;
+            tile_values_.board[1][2] = 6;
+
+            tile_values_.board[2][0] = 4;
+            tile_values_.board[2][1] = 7;
+            tile_values_.board[2][2] = 0;
+
+            hf_.SetBlankPos(tile_values_, ref blank_pos_, size_);
+
+            DrawBoard();
+        }
+
+        internal void Initialise58Moves()
+        {
+            tile_values_.board[0][0] = 14;
+            tile_values_.board[0][1] = 13;
+            tile_values_.board[0][2] = 5;
+            tile_values_.board[0][3] = 2;
+
+            tile_values_.board[1][0] = 15;
+            tile_values_.board[1][1] = 10;
+            tile_values_.board[1][2] = 11;
+            tile_values_.board[1][3] = 1;
+
+            tile_values_.board[2][0] = 8;
+            tile_values_.board[2][1] = 7;
+            tile_values_.board[2][2] = 12;
+            tile_values_.board[2][3] = 9;
+
+            tile_values_.board[3][0] = 3;
+            tile_values_.board[3][1] = 0;
+            tile_values_.board[3][2] = 4;
+            tile_values_.board[3][3] = 6;
+
+            hf_.SetBlankPos(tile_values_, ref blank_pos_, size_);
+
+            DrawBoard();
+        }
+
+        internal void Initialise42Moves()
+        {
+            tile_values_.board[0][0] = 9;
+            tile_values_.board[0][1] = 5;
+            tile_values_.board[0][2] = 7;
+            tile_values_.board[0][3] = 12;
+
+            tile_values_.board[1][0] = 6;
+            tile_values_.board[1][1] = 13;
+            tile_values_.board[1][2] = 1;
+            tile_values_.board[1][3] = 2;
+
+            tile_values_.board[2][0] = 14;
+            tile_values_.board[2][1] = 11;
+            tile_values_.board[2][2] = 8;
+            tile_values_.board[2][3] = 3;
+
+            tile_values_.board[3][0] = 10;
+            tile_values_.board[3][1] = 0;
+            tile_values_.board[3][2] = 4;
+            tile_values_.board[3][3] = 15;
+
+            hf_.SetBlankPos(tile_values_, ref blank_pos_, size_);
+
+            DrawBoard();
+        }
+
+        internal void Initialise34Moves()
+        {
+            tile_values_.board[0][0] = 2;
+            tile_values_.board[0][1] = 4;
+            tile_values_.board[0][2] = 8;
+            tile_values_.board[0][3] = 7;
+
+            tile_values_.board[1][0] = 1;
+            tile_values_.board[1][1] = 9;
+            tile_values_.board[1][2] = 10;
+            tile_values_.board[1][3] = 0;
+
+            tile_values_.board[2][0] = 14;
+            tile_values_.board[2][1] = 3;
+            tile_values_.board[2][2] = 5;
+            tile_values_.board[2][3] = 6;
+
+            tile_values_.board[3][0] = 13;
+            tile_values_.board[3][1] = 11;
+            tile_values_.board[3][2] = 12;
+            tile_values_.board[3][3] = 15;
+
+            hf_.SetBlankPos(tile_values_, ref blank_pos_, size_);
+
+            DrawBoard();
         }
     }
 }

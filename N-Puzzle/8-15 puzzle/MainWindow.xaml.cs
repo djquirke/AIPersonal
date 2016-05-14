@@ -62,9 +62,15 @@ namespace _8_15_puzzle
             rdio_8.IsEnabled = p;
             rdio_15.IsEnabled = p;
             cbx_alg.IsEnabled = p;
+            cbx_heur.IsEnabled = p;
             cbxi_bfs.IsEnabled = p;
             btn_shuffle.IsEnabled = p;
             btn_hard8.IsEnabled = p;
+            btn_10move.IsEnabled = p;
+            btn_22move.IsEnabled = p;
+            btn_34moves.IsEnabled = p;
+            btn_42moves.IsEnabled = p;
+            btn_58moves.IsEnabled = p;
             btn_Run.IsEnabled = p;
 
             if (rdio_15.IsChecked.Value) cbxi_bfs.IsEnabled = false;
@@ -123,9 +129,11 @@ namespace _8_15_puzzle
             }
             else if(cbx_alg.Text.Equals("A*") && cbx_heur.Text.Equals("Pattern Databases"))
             {
-                MessageBox.Show("A* with PD");
+                //PatternDatabase.Instance.Build();
+                //runAStar(true);
+                MessageBox.Show("Pattern database not implemented, please see commented pseudocode in PatternDatabase.cs", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-
+            
         }
 
         private async void runBFS()
@@ -135,14 +143,21 @@ namespace _8_15_puzzle
             long rt = 0;
             int move_count = 0;
             int boards_searched = 0;
+            int open_list_size = 0;
+            long mem_used = 0;
 
-            bool success = await Task.Run(() => board_.RunBFS(ref rt, ref move_count, ref boards_searched));
+            bool success = await Task.Run(() => board_.RunBFS(ref rt, ref move_count, ref boards_searched, ref open_list_size, ref mem_used));
 
             EnableAllButtons(true);
+
+            mem_used /= 1024;
+            mem_used /= 1024;
 
             lbl_rt.Content = rt.ToString() + "ms";
             lbl_moves.Content = move_count.ToString();
             lbl_boards_searched.Content = boards_searched.ToString();
+            lbl_open_list.Content = open_list_size.ToString();
+            lbl_mem_used.Content = mem_used.ToString();
 
             if (success)
             {
@@ -162,14 +177,22 @@ namespace _8_15_puzzle
             long rt = 0;
             int move_count = 0;
             int boards_searched = 0;
+            int open_list_size = 0;
+            long mem_used = 0;
 
-            bool success = await Task.Run(() => board_.RunAStar(ref rt, ref move_count, ref boards_searched));
+            bool success = await Task.Run(() => board_.RunAStar(ref rt, ref move_count, ref boards_searched, ref open_list_size, ref mem_used));
 
             EnableAllButtons(true);
 
             lbl_rt.Content = rt.ToString() + "ms";
             lbl_moves.Content = move_count.ToString();
             lbl_boards_searched.Content = boards_searched.ToString();
+            lbl_open_list.Content = open_list_size.ToString();
+
+            mem_used /= 1024;
+            mem_used /= 1024;
+
+            lbl_mem_used.Content = mem_used;
 
             if (success)
             {
@@ -187,6 +210,51 @@ namespace _8_15_puzzle
             EnableAllButtons(false);
             await Task.Run(() => board_.RunSimulation(250));
             EnableAllButtons(true);
+        }
+
+        private void set22Moves(object sender, RoutedEventArgs e)
+        {
+            board_.ChangeGridSize(3);
+            cbxi_bfs.IsEnabled = true;
+            rdio_8.IsChecked = true;
+
+            board_.Initialise22Moves();
+        }
+
+        private void set10moves(object sender, RoutedEventArgs e)
+        {
+            board_.ChangeGridSize(3);
+            cbxi_bfs.IsEnabled = true;
+            rdio_8.IsChecked = true;
+
+            board_.Initialise10Moves();
+        }
+
+        private void set34moves(object sender, RoutedEventArgs e)
+        {
+            board_.ChangeGridSize(4);
+            cbxi_bfs.IsEnabled = false;
+            rdio_15.IsChecked = true;
+
+            board_.Initialise34Moves();
+        }
+
+        private void set42moves(object sender, RoutedEventArgs e)
+        {
+            board_.ChangeGridSize(4);
+            cbxi_bfs.IsEnabled = false;
+            rdio_15.IsChecked = true;
+
+            board_.Initialise42Moves();
+        }
+
+        private void set58moves(object sender, RoutedEventArgs e)
+        {
+            board_.ChangeGridSize(4);
+            cbxi_bfs.IsEnabled = false;
+            rdio_15.IsChecked = true;
+
+            board_.Initialise58Moves();
         }
     }
 }

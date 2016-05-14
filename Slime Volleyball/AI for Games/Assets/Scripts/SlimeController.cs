@@ -12,14 +12,14 @@ public class SlimeController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (Input.GetKey(KeyCode.A)){
-			transform.Translate(0.05f*Vector3.left);
+			transform.Translate(0.075f*Vector3.left);
 		}
 		if (Input.GetKey(KeyCode.D)){
-			transform.Translate(0.05f*Vector3.right);
+			transform.Translate(0.075f*Vector3.right);
 		}
 		if (Input.GetKeyDown(KeyCode.W) && !jumping){
 			jumping = true;
-			rigidbody.AddForce(250f*Vector3.up,ForceMode.Acceleration);
+			rigidbody.AddForce(175f*Vector3.up,ForceMode.Acceleration);
 		}
 	}
 
